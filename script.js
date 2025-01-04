@@ -45,7 +45,7 @@ document.querySelector(".info-container").append(drivingDifficulty, pollenLevel,
 
 function addDataToDom(data) {
 	cityName.innerHTML = `${data.name}, ${data.sys.country}`;
-	cityTemp.innerHTML = `${Math.round(data.main.temp - 275.15)}°C`;
+	cityTemp.innerHTML = `${Math.round(data.main.temp - 273.15)}°C`;
 	cityCond.innerHTML = data.weather[0].description;
 	cityHumidity.innerHTML = `Humedad: ${data.main.humidity}%`;
 
