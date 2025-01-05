@@ -5,6 +5,7 @@
 	margin: 0;
 	box-sizing: border-box;
 }
+
 body {
 	font-family: "Barlow", sans-serif;
 	background-image: url("imagenes/bg1.jpg");
@@ -13,20 +14,24 @@ body {
 	background-position: 70%;
 	height: 100vh;
 }
+
 header {
 	display: flex;
 	flex-direction: column;
 }
+
 header .title {
 	margin-top: 40px;
 	text-align: center;
 	text-shadow: 0 0 50px black;
 }
+
 header .weather-icon {
 	width: 40px;
 	margin-bottom: -10px;
 	margin-right: 10px;
 }
+
 header #get-city {
 	width: 200px;
 	position: relative;
@@ -39,6 +44,7 @@ header #get-city {
 	outline: none;
 	box-shadow: 0 8px 32px 0 rgba(31, 31, 31, 0.37);
 }
+
 main .info-container {
 	background: rgba(255, 255, 255, 0.2);
 	box-shadow: 0 8px 32px 0 rgba(31, 31, 31, 0.37);
@@ -53,32 +59,42 @@ main .info-container {
 	padding: 30px;
 	text-align: center;
 }
+
 #get-city {
 	text-align: center;
 }
+
 .city-name {
 	font-size: 23px;
 	margin: 20px 0;
 }
+
 .weather-deg {  
 	font-size: 80px;
 	margin-top: 20px;
 	margin-bottom: 40px; 
 }
+
 .weather-condition {
 	margin-bottom: 20px;
 }
+
+.day-night i#day-icon {
+	display: none; /* El ícono del sol está oculto por defecto */
+	color: #f39c12; /* Amarillo para el sol */
+	font-size: 1.5rem;
+}
 @media screen and (max-width: 480px) {
-    .title {
-        font-size: 1.2rem;
-    }
+	.title {
+		font-size: 1.2rem;
+	}
 
-    input#get-city {
-        font-size: 0.8rem;
-        padding: 8px;
-    }
+	input#get-city {
+		font-size: 0.8rem;
+		padding: 8px;
+	}
 
-    .info-container {
-        padding: 10px;
-    }
+	.info-container {
+		padding: 10px;
+	}
 }
