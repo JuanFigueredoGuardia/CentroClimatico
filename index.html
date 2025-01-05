@@ -1,54 +1,62 @@
 <!DOCTYPE html>
 <html lang="es">
-	<head>
-		<meta charset="UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Sistema Meteorológico</title>
-		<link rel="stylesheet" href="styles.css" />
-		<script src="script.js" defer></script>
-		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
-	</head>
-	<body>
-		<header>
-			<h1 class="title">
-				<img class="weather-icon" src="imagenes/weather-icon.png" alt="weather logo" />
-				Clima
-			</h1>
-			<input id="get-city" type="text" placeholder="Buscar Ciudad"/>
-		</header>
-		<main>
-			<div class="info-container">
-				<div class="info-item">
-					<i class="fas fa-city"></i>
-					<span class="city-name">Tu ciudad: </span><span id="city-name"></span>
-				</div>
-				<div class="info-item">
-					<i class="fas fa-calendar-day"></i>
-					<span class="date-info">
-						<span class="day"></span> <span class="date"></span>
-					</span>
-				</div>
-				<div class="info-item">
-					<i class="fas fa-clock"></i>
-					<span class="time" id="current-time"></span>
-				</div>
-				<div class="info-item">
-					<span class="weather-deg"></span>
-				</div>
-				<div class="info-item">
-					<i class="fas fa-cloud-sun"></i>
-					<span class="weather-condition"></span>
-				</div>
-				<div class="info-item">
-					<i class="fas fa-tint"></i>
-					<span class="humidity"></span>
-				</div>
-				<div class="info-item">
-					<i class="fas fa-wind"></i>
-					<span class="wind"></span>
-				</div>
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Sistema Meteorológico</title>
+	<link rel="stylesheet" href="styles.css" />
+	<script src="script.js" defer></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+</head>
+<body>
+	<header>
+		<h1 class="title">
+			<img class="weather-icon" src="imagenes/weather-icon.png" alt="weather logo" />
+			Clima
+		</h1>
+		<input id="get-city" type="text" placeholder="Buscar Ciudad" />
+	</header>
+	<main>
+		<div class="info-container">
+			<div class="info-item">
+				<i class="fas fa-city"></i>
+				<span class="city-name">Tu ciudad: </span><span id="city-name"></span>
 			</div>
-		</main>
-	</body>
+			<div class="info-item">
+				<i class="fas fa-calendar-day"></i>
+				<span class="date-info">
+					<span class="day"></span> <span class="date"></span>
+				</span>
+			</div>
+			<div class="info-item">
+				<i class="fas fa-clock"></i>
+				<span class="time" id="current-time"></span>
+			</div>
+			<div class="info-item">
+				<span class="weather-deg"></span>
+			</div>
+			<div class="info-item">
+				<i class="fas fa-cloud-sun"></i>
+				<span class="weather-condition"></span>
+			</div>
+			<div class="info-item">
+				<i class="fas fa-tint"></i>
+				<span class="humidity"></span>
+			</div>
+			<div class="info-item">
+				<i class="fas fa-wind"></i>
+				<span class="wind"></span>
+			</div>
+			<div class="info-item day-night">
+				<i class="fas fa-sun" id="day-icon"></i>
+				<span class="day-night-status"></span>
+			</div>
+			<div class="info-item">
+				<i class="fas fa-moon"></i>
+				<span class="moon-phase"></span>
+			</div>
+		</div>
+	</main>
+</body>
 </html>
