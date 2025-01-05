@@ -4,14 +4,14 @@ let bodyElem = document.querySelector("body");
 window.addEventListener("load", () => {
 	let randNum = Math.ceil(Math.random() * 5);
 	bodyElem.style.backgroundImage = `url('imagenes/bg${randNum}.jpg')`;
-	if (randNum == 3 || randNum == 4 || randNum == 5) {
+	if (randNum === 3 || randNum === 4 || randNum === 5) {
 		titleLogo.style.color = "white";
 	}
 });
 
 let cityInput = document.querySelector("#get-city");
 cityInput.addEventListener("keypress", (event) => {
-	if (event.key == "Enter") {
+	if (event.key === "Enter") {
 		fetchDataFromApi();
 	}
 });
@@ -20,12 +20,14 @@ let apiData = {
 	url: "https://api.openweathermap.org/data/2.5/weather?q=",
 	key: "124b92a8dd9ec01ffb0dbf64bc44af3c",
 };
+
 cityInput.value = "Concordia";
 fetchDataFromApi();
 cityInput.value = "";
+
 function fetchDataFromApi() {
 	let insertedCity = cityInput.value;
-	fetch(`${apiData.url}${insertedCity}&&appid=${apiData.key}&lang=es`)
+	fetch(`${apiData.url}${insertedCity}&appid=${apiData.key}`)
 		.then((res) => res.json())
 		.then((data) => addDataToDom(data));
 }
@@ -37,102 +39,84 @@ let cityHumidity = document.querySelector(".humidity");
 let cityWind = document.querySelector(".wind");
 let todayDate = document.querySelector(".date");
 let currentTime = document.querySelector(".time");
-let drivingDifficulty = document.createElement("h3");
-let pollenLevel = document.createElement("h3");
-let runningAdvice = document.createElement("h3");
-
-document.querySelector(".info-container").append(drivingDifficulty, pollenLevel, runningAdvice);
+let moonPhaseElem = document.querySelector(".moon-phase");
+let dayNightStatus = document.querySelector(".day-night-status");
+let dayIcon = document.querySelector("#day-icon");
 
 function addDataToDom(data) {
 	cityName.innerHTML = `${data.name}, ${data.sys.country}`;
 	cityTemp.innerHTML = `${Math.round(data.main.temp - 273.15)}°C`;
-	cityCond.innerHTML = data.weather[0].description;
+	cityCond.innerHTML = translateWeatherCondition(data.weather[0].description);
 	cityHumidity.innerHTML = `Humedad: ${data.main.humidity}%`;
-
-	// Conversión de m/s a km/h
-	let windSpeedKmH = (data.wind.speed * 3.6).toFixed(1); // Redondeo a 1 decimal
-	cityWind.innerHTML = `Viento: ${windSpeedKmH} km/h, ${getWindDirection(data.wind.deg)}`;
-	
-	todayDate.innerHTML = getFullDate();
-
-	// Simulación de niveles de polen
-	let pollenIndex = simulatePollen(data.main.humidity, windSpeedKmH);
-	pollenLevel.innerHTML = `Nivel de polen: ${pollenIndex}`;
-
-	// Dificultad para conducir
-	let drivingAdvice = getDrivingDifficulty(data.weather[0].main, windSpeedKmH);
-	drivingDifficulty.innerHTML = `Dificultad para conducir: ${drivingAdvice}`;
-
-	// Consejos para correr
-	let runningCondition = getRunningAdvice(data.main.temp, windSpeedKmH);
-	runningAdvice.innerHTML = `Consejo para correr: ${runningCondition}`;
+	cityWind.innerHTML = `Viento: ${(data.wind.speed * 3.6).toFixed(1)} km/h, ${getWindDirection(data.wind.deg)}`;
+	todayDate.innerHTML = getDate();
+	updateDayNightStatus(data.sys.sunrise, data.sys.sunset);
+	updateMoonPhase();
 }
 
-// Arrays de días y meses en español
+function translateWeatherCondition(description) {
+	const translations = {
+		"clear sky": "Cielo despejado",
+		"few clouds": "Pocas nubes",
+		"scattered clouds": "Nubes dispersas",
+		"broken clouds": "Nubes rotas",
+		"overcast clouds": "Nublado",
+		"shower rain": "Lluvia ligera",
+		"rain": "Lluvia",
+		"thunderstorm": "Tormenta eléctrica",
+		"snow": "Nieve",
+		"mist": "Neblina",
+	};
+
+	return translations[description] || description; // Retorna la traducción o el original si no está en el 
+diccionario
+}
+
+let months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", 
+"Noviembre", "Diciembre"];
 let days = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-let months = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre"
-,"Diciembre",
-];
 
-// Función para obtener la fecha completa en español
-function getFullDate() {
+function getDate() {
 	let newTime = new Date();
-	let dayOfWeek = days[newTime.getDay()]; // Día de la semana
-	let day = newTime.getDate().toString().padStart(2, "0");
+	let day = days[newTime.getDay()];
 	let month = months[newTime.getMonth()];
-	let year = newTime.getFullYear();
-	return `${dayOfWeek}, ${day} de ${month} de ${year}`;
+	return `${day}, ${newTime.getDate()} ${month} ${newTime.getFullYear()}`;
 }
 
-// Función para obtener la hora en vivo en formato español
 function updateLiveTime() {
 	let now = new Date();
 	let hours = now.getHours().toString().padStart(2, "0");
 	let minutes = now.getMinutes().toString().padStart(2, "0");
 	let seconds = now.getSeconds().toString().padStart(2, "0");
-	currentTime.innerHTML = `Hora actual: ${hours}:${minutes}:${seconds}`;
+	currentTime.innerHTML = `${hours}:${minutes}:${seconds}`;
 }
 
-// Función para convertir dirección del viento a puntos cardinales en español
 function getWindDirection(deg) {
-	const directions = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"];
+	const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
 	const index = Math.round(deg / 45) % 8;
 	return directions[index];
 }
 
-// Simulación de niveles de polen
-function simulatePollen(humidity, windSpeed) {
-	if (humidity > 70 || windSpeed < 10) {
-		return "Bajo";
-	} else if (humidity <= 70 && windSpeed >= 10 && windSpeed <= 20) {
-		return "Moderado";
+function updateDayNightStatus(sunrise, sunset) {
+	let now = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
+	if (now >= sunrise && now < sunset) {
+		dayNightStatus.innerHTML = "Día";
+		dayIcon.style.display = "inline-block";
 	} else {
-		return "Alto";
+		dayNightStatus.innerHTML = "Noche";
+		dayIcon.style.display = "none";
 	}
 }
 
-// Determinar dificultad para conducir
-function getDrivingDifficulty(weatherCondition, windSpeed) {
-	if (["Rain", "Snow", "Thunderstorm"].includes(weatherCondition) || windSpeed > 36) {
-		return "Difícil";
-	} else if (windSpeed > 18) {
-		return "Moderado";
-	} else {
-		return "Fácil";
-	}
+function updateMoonPhase() {
+	let now = new Date();
+	let lunarCycle = 29.53; // Duración promedio de un ciclo lunar en días
+	let newMoon = new Date("2024-01-11"); // Fecha conocida de luna nueva
+	let daysSinceNewMoon = (now - newMoon) / (1000 * 60 * 60 * 24); // Diferencia en días
+	let phaseIndex = Math.round((daysSinceNewMoon % lunarCycle) / (lunarCycle / 8));
+	let phases = ["Luna nueva", "Creciente inicial", "Cuarto creciente", "Creciente gibosa", "Luna llena", 
+"Menguante gibosa", "Cuarto menguante", "Menguante inicial"];
+	moonPhaseElem.innerHTML = `Fase lunar: ${phases[phaseIndex]}`;
 }
 
-// Determinar si es buen momento para correr
-function getRunningAdvice(temp, windSpeed) {
-	let tempCelsius = temp - 273.15; // Convertir de Kelvin a Celsius
-	if (tempCelsius < 10 || tempCelsius > 30 || windSpeed > 36) {
-		return "Malo";
-	} else if ((tempCelsius >= 10 && tempCelsius <= 15) || windSpeed > 18) {
-		return "Regular";
-	} else {
-		return "Bueno";
-	}
-}
-
-// Actualizar la hora en vivo cada segundo
 setInterval(updateLiveTime, 1000);
