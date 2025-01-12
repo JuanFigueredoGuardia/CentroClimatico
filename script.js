@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((data) => {
                 cityNameElement.textContent = data.name;
                 weatherConditionElement.textContent = data.weather[0].description;
-                weatherDegElement.textContent = `${data.main.temp}°C`;
+                weatherDegElement.textContent = `${Math.round(data.main.temp)}°C`; // Redondear la temperatura
                 humidityElement.textContent = `Humedad: ${data.main.humidity}%`;
                 windElement.textContent = `Viento: ${data.wind.speed} m/s`;
                 dayNightStatusElement.textContent =
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Obtener datos del pronóstico para los próximos días
     const fetchForecastData = (city = DEFAULT_CITY) => {
-        const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=es&appid=${API_KEY}
+        const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=es&appid=${API_KEY
 `;
         fetch(url)
             .then((response) => response.json())
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     dayElement.innerHTML = `
                         <div class="day-name">${dayString}</div>
                         <i class="fas fa-cloud"></i>
-                        <div class="temp">${forecast.main.temp}°C</div>
+                        <div class="temp">${Math.round(forecast.main.temp)}°C</div> <!-- Redondear la temperatura --
                         <div class="description">${forecast.weather[0].description}</div>
                     `;
                     forecastDaysContainer.appendChild(dayElement);
