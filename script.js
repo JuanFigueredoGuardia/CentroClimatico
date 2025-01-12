@@ -1,122 +1,125 @@
-let titleLogo = document.querySelector(".title");
-let bodyElem = document.querySelector("body");
+document.addEventListener("DOMContentLoaded", () => {
+    const cityNameElement = document.getElementById("city-name");
+    const weatherConditionElement = document.querySelector(".weather-condition");
+    const weatherDegElement = document.querySelector(".weather-deg");
+    const humidityElement = document.querySelector(".humidity");
+    const windElement = document.querySelector(".wind");
+    const dayNightStatusElement = document.querySelector(".day-night-status");
 
-window.addEventListener("load", () => {
-	let randNum = Math.ceil(Math.random() * 5);
-	bodyElem.style.backgroundImage = `url('imagenes/bg${randNum}.jpg')`;
-	if (randNum === 3 || randNum === 4 || randNum === 5) {
-		titleLogo.style.color = "white";
-	}
+    const forecastDaysContainer = document.querySelector(".forecast-days");
+    const prevBtn = document.querySelector(".prev-btn");
+    const nextBtn = document.querySelector(".next-btn");
+
+    // Configuración inicial
+    const API_KEY = "77810747479a58a3c9a8d0311f06e489"; // Reemplaza con tu clave API de OpenWeatherMap
+    const DEFAULT_CITY = "Concordia"; // Ciudad predeterminada
+
+    // Obtener datos del clima actual
+    const fetchWeatherData = (city = DEFAULT_CITY) => {
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=es&appid=${API_KEY}
+`;
+        fetch(url)
+            .then((response) => response.json())
+            .then((data) => {
+                cityNameElement.textContent = data.name;
+                weatherConditionElement.textContent = data.weather[0].description;
+                weatherDegElement.textContent = `${data.main.temp}°C`;
+                humidityElement.textContent = `Humedad: ${data.main.humidity}%`;
+                windElement.textContent = `Viento: ${data.wind.speed} m/s`;
+                dayNightStatusElement.textContent =
+                    data.weather[0].icon.includes("d") ? "Día" : "Noche";
+            })
+            .catch((error) => {
+                console.error("Error al obtener los datos del clima:", error);
+            });
+    };
+
+    // Obtener datos del pronóstico para los próximos días
+    const fetchForecastData = (city = DEFAULT_CITY) => {
+        const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=es&appid=${API_KEY}
+`;
+        fetch(url)
+            .then((response) => response.json())
+            .then((data) => {
+                forecastDaysContainer.innerHTML = ""; // Limpiar el contenedor
+                const forecastDays = data.list.filter((item) =>
+                    item.dt_txt.includes("12:00:00")
+                ); // Obtener datos a las 12:00 PM de cada día
+
+                forecastDays.forEach((forecast) => {
+                    const date = new Date(forecast.dt * 1000);
+                    const options = { weekday: "long", day: "numeric", month: "long" };
+                    const dayString = date.toLocaleDateString("es-ES", options);
+
+                    const dayElement = document.createElement("div");
+                    dayElement.classList.add("forecast-day");
+                    dayElement.innerHTML = `
+                        <div class="day-name">${dayString}</div>
+                        <i class="fas fa-cloud"></i>
+                        <div class="temp">${forecast.main.temp}°C</div>
+                        <div class="description">${forecast.weather[0].description}</div>
+                    `;
+                    forecastDaysContainer.appendChild(dayElement);
+                });
+            })
+            .catch((error) => {
+                console.error("Error al obtener el pronóstico del clima:", error);
+            });
+    };
+
+    // Slider para los días del pronóstico
+    let currentIndex = 0;
+
+    const updateSliderPosition = () => {
+        const slideWidth = document.querySelector(".forecast-day").offsetWidth + 10; // Ancho del slide más margen
+        forecastDaysContainer.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+    };
+
+    prevBtn.addEventListener("click", () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateSliderPosition();
+        }
+    });
+
+    nextBtn.addEventListener("click", () => {
+        if (
+            currentIndex <
+            forecastDaysContainer.children.length - 1
+        ) {
+            currentIndex++;
+            updateSliderPosition();
+        }
+    });
+
+    // Actualizar hora y fecha
+    const updateTime = () => {
+        const now = new Date();
+        const dayNames = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+        const day = dayNames[now.getDay()];
+        const date = now.toLocaleDateString();
+        const time = now.toLocaleTimeString();
+
+        document.querySelector(".day").textContent = day;
+        document.querySelector(".date").textContent = date;
+        document.getElementById("current-time").textContent = time;
+    };
+
+    setInterval(updateTime, 1000); // Actualizar cada segundo
+    updateTime();
+
+    // Inicializar datos predeterminados
+    fetchWeatherData();
+    fetchForecastData();
+
+    // Evento de búsqueda de ciudad
+    document.getElementById("get-city").addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+            const city = event.target.value.trim();
+            if (city) {
+                fetchWeatherData(city);
+                fetchForecastData(city);
+            }
+        }
+    });
 });
-
-let cityInput = document.querySelector("#get-city");
-cityInput.addEventListener("keypress", (event) => {
-	if (event.key === "Enter") {
-		fetchDataFromApi();
-	}
-});
-
-let apiData = {
-	url: "https://api.openweathermap.org/data/2.5/weather?q=",
-	key: "124b92a8dd9ec01ffb0dbf64bc44af3c",
-};
-
-cityInput.value = "Concordia";
-fetchDataFromApi();
-cityInput.value = "";
-
-function fetchDataFromApi() {
-	let insertedCity = cityInput.value;
-	fetch(`${apiData.url}${insertedCity}&appid=${apiData.key}`)
-		.then((res) => res.json())
-		.then((data) => addDataToDom(data));
-}
-
-let cityName = document.querySelector(".city-name");
-let cityTemp = document.querySelector(".weather-deg");
-let cityCond = document.querySelector(".weather-condition");
-let cityHumidity = document.querySelector(".humidity");
-let cityWind = document.querySelector(".wind");
-let todayDate = document.querySelector(".date");
-let currentTime = document.querySelector(".time");
-let moonPhaseElem = document.querySelector(".moon-phase");
-let dayNightStatus = document.querySelector(".day-night-status");
-let dayIcon = document.querySelector("#day-icon");
-
-function addDataToDom(data) {
-	cityName.innerHTML = `${data.name}, ${data.sys.country}`;
-	cityTemp.innerHTML = `${Math.round(data.main.temp - 273.15)}°C`;
-	cityCond.innerHTML = translateWeatherCondition(data.weather[0].description);
-	cityHumidity.innerHTML = `Humedad: ${data.main.humidity}%`;
-	cityWind.innerHTML = `Viento: ${(data.wind.speed * 3.6).toFixed(1)} km/h, ${getWindDirection(data.wind.deg)}`;
-	todayDate.innerHTML = getDate();
-	updateDayNightStatus(data.sys.sunrise, data.sys.sunset);
-	updateMoonPhase();
-}
-
-function translateWeatherCondition(description) {
-	const translations = {
-		"clear sky": "Cielo despejado",
-		"few clouds": "Pocas nubes",
-		"scattered clouds": "Nubes dispersas",
-		"broken clouds": "Nubes rotas",
-		"overcast clouds": "Nublado",
-		"shower rain": "Lluvia ligera",
-		"rain": "Lluvia",
-		"thunderstorm": "Tormenta eléctrica",
-		"snow": "Nieve",
-		"mist": "Neblina",
-	};
-
-	return translations[description] || description; // Retorna la traducción o el original si no está en el 
-diccionario
-}
-
-let months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", 
-"Noviembre", "Diciembre"];
-let days = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-
-function getDate() {
-	let newTime = new Date();
-	let day = days[newTime.getDay()];
-	let month = months[newTime.getMonth()];
-	return `${day}, ${newTime.getDate()} ${month} ${newTime.getFullYear()}`;
-}
-
-function updateLiveTime() {
-	let now = new Date();
-	let hours = now.getHours().toString().padStart(2, "0");
-	let minutes = now.getMinutes().toString().padStart(2, "0");
-	let seconds = now.getSeconds().toString().padStart(2, "0");
-	currentTime.innerHTML = `${hours}:${minutes}:${seconds}`;
-}
-
-function getWindDirection(deg) {
-	const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
-	const index = Math.round(deg / 45) % 8;
-	return directions[index];
-}
-
-function updateDayNightStatus(sunrise, sunset) {
-	let now = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
-	if (now >= sunrise && now < sunset) {
-		dayNightStatus.innerHTML = "Día";
-		dayIcon.style.display = "inline-block";
-	} else {
-		dayNightStatus.innerHTML = "Noche";
-		dayIcon.style.display = "none";
-	}
-}
-
-function updateMoonPhase() {
-	let now = new Date();
-	let lunarCycle = 29.53; // Duración promedio de un ciclo lunar en días
-	let newMoon = new Date("2024-01-11"); // Fecha conocida de luna nueva
-	let daysSinceNewMoon = (now - newMoon) / (1000 * 60 * 60 * 24); // Diferencia en días
-	let phaseIndex = Math.round((daysSinceNewMoon % lunarCycle) / (lunarCycle / 8));
-	let phases = ["Luna nueva", "Creciente inicial", "Cuarto creciente", "Creciente gibosa", "Luna llena", 
-"Menguante gibosa", "Cuarto menguante", "Menguante inicial"];
-	moonPhaseElem.innerHTML = `Fase lunar: ${phases[phaseIndex]}`;
-}
-
-setInterval(updateLiveTime, 1000);
