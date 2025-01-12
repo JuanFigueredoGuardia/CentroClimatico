@@ -21,42 +21,14 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch(url)
             .then((response) => response.json())
             .then((data) => {
-                // Mostrar datos básicos
                 cityNameElement.textContent = data.name;
+                weatherConditionElement.textContent = data.weather[0].description;
                 weatherDegElement.textContent = `${Math.round(data.main.temp)}°C`;
                 humidityElement.textContent = `Humedad: ${data.main.humidity}%`;
-
-                // Convertir velocidad del viento de m/s a km/h
-                const windSpeedKmh = (data.wind.speed * 3.6).toFixed(1);
-                const windDirection = getWindDirection(data.wind.deg);
-                windElement.textContent = `Viento: ${windSpeedKmh} km/h, dirección ${windDirection}`;
-
-                // Determinar si es día o noche
+                windElement.textContent = `Viento: ${(data.wind.speed * 3.6).toFixed(1)} km/h (${getWindDirection
+(data.wind.deg)})`;
                 dayNightStatusElement.textContent =
                     data.weather[0].icon.includes("d") ? "Día" : "Noche";
-
-                // Descripción del clima
-                const weatherMain = data.weather[0].main;
-                switch (weatherMain) {
-                    case "Clear":
-                        weatherConditionElement.textContent = "Cielo despejado y soleado";
-                        break;
-                    case "Rain":
-                        weatherConditionElement.textContent = "Está lloviendo";
-                        break;
-                    case "Thunderstorm":
-                        weatherConditionElement.textContent = "Tormenta eléctrica";
-                        break;
-                    case "Snow":
-                        weatherConditionElement.textContent = "Está nevando";
-                        break;
-                    case "Clouds":
-                        weatherConditionElement.textContent = "Está nublado";
-                        break;
-                    default:
-                        weatherConditionElement.textContent = data.weather[0].description;
-                        break;
-                }
             })
             .catch((error) => {
                 console.error("Error al obtener los datos del clima:", error);
@@ -80,18 +52,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     const options = { weekday: "long", day: "numeric", month: "long" };
                     const dayString = date.toLocaleDateString("es-ES", options);
 
-                    // Calcular porcentaje de probabilidad de lluvia
-                    const rainPercentage = forecast.pop ? (forecast.pop * 100).toFixed(0) : 0;
-                    const rainText = `Probabilidad de lluvia: ${rainPercentage}%`;
-
                     const dayElement = document.createElement("div");
                     dayElement.classList.add("forecast-day");
                     dayElement.innerHTML = `
                         <div class="day-name">${dayString}</div>
-                        <i class="fas fa-cloud"></i>
                         <div class="temp">${Math.round(forecast.main.temp)}°C</div>
                         <div class="description">${forecast.weather[0].description}</div>
-                        <div class="rain">${rainText}</div>
                     `;
                     forecastDaysContainer.appendChild(dayElement);
                 });
@@ -101,10 +67,10 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     };
 
-    // Convertir dirección del viento en texto
-    const getWindDirection = (degrees) => {
-        const directions = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"];
-        const index = Math.round(degrees / 45) % 8;
+    // Obtener dirección del viento
+    const getWindDirection = (deg) => {
+        const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+        const index = Math.round(deg / 45) % 8;
         return directions[index];
     };
 
