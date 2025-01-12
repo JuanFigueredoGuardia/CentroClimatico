@@ -1,100 +1,157 @@
 @import url("https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500&display=swap");
 
 * {
-	padding: 0;
-	margin: 0;
-	box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 body {
-	font-family: "Barlow", sans-serif;
-	background-image: url("imagenes/bg1.jpg");
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: 70%;
-	height: 100vh;
+    font-family: "Barlow", sans-serif;
+    background-image: url("imagenes/bg1.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 70%;
+    height: 100vh;
 }
 
 header {
-	display: flex;
-	flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 header .title {
-	margin-top: 40px;
-	text-align: center;
-	text-shadow: 0 0 50px black;
+    margin-top: 40px;
+    text-align: center;
+    text-shadow: 0 0 50px black;
 }
 
 header .weather-icon {
-	width: 40px;
-	margin-bottom: -10px;
-	margin-right: 10px;
+    width: 40px;
+    margin-bottom: -10px;
+    margin-right: 10px;
 }
 
 header #get-city {
-	width: 200px;
-	position: relative;
-	margin: auto;
-	margin-top: 50px;
-	height: 50px;
-	border: none;
-	border-radius: 10px;
-	padding: 0 10px;
-	outline: none;
-	box-shadow: 0 8px 32px 0 rgba(31, 31, 31, 0.37);
+    width: 200px;
+    position: relative;
+    margin: auto;
+    margin-top: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 10px;
+    padding: 0 10px;
+    outline: none;
+    box-shadow: 0 8px 32px 0 rgba(31, 31, 31, 0.37);
 }
 
 main .info-container {
-	background: rgba(255, 255, 255, 0.2);
-	box-shadow: 0 8px 32px 0 rgba(31, 31, 31, 0.37);
-	backdrop-filter: blur(7px);
-	-webkit-backdrop-filter: blur(7px);
-	border-radius: 20px;
-	max-width: 900px;
-	min-height: 200px;
-	position: relative;
-	margin: auto;
-	margin-top: 10px;
-	padding: 30px;
-	text-align: center;
-}
-
-#get-city {
-	text-align: center;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 31, 31, 0.37);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    border-radius: 20px;
+    max-width: 900px;
+    min-height: 200px;
+    position: relative;
+    margin: auto;
+    margin-top: 10px;
+    padding: 30px;
+    text-align: center;
 }
 
 .city-name {
-	font-size: 23px;
-	margin: 20px 0;
+    font-size: 23px;
+    margin: 20px 0;
 }
 
-.weather-deg {  
-	font-size: 80px;
-	margin-top: 20px;
-	margin-bottom: 40px; 
+.weather-deg {
+    font-size: 80px;
+    margin-top: 20px;
+    margin-bottom: 40px;
 }
 
 .weather-condition {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
-.day-night i#day-icon {
-	display: none; /* El ícono del sol está oculto por defecto */
-	color: #f39c12; /* Amarillo para el sol */
-	font-size: 1.5rem;
+.forecast {
+    margin-top: 30px;
 }
+
+.forecast-slider {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.forecast-days-container {
+    overflow: hidden;
+    width: 80%;
+}
+
+.forecast-days {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.forecast-day {
+    min-width: 120px;
+    text-align: center;
+    padding: 10px;
+    margin: 0 5px;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.forecast-day i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.forecast-day .day-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.forecast-day .temp {
+    font-size: 1.2rem;
+}
+
+.slider-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px;
+    margin: 0 10px;
+    transition: color 0.3s;
+}
+
+.slider-btn:hover {
+    color: #ddd;
+}
+
 @media screen and (max-width: 480px) {
-	.title {
-		font-size: 1.2rem;
-	}
+    .title {
+        font-size: 1.2rem;
+    }
 
-	input#get-city {
-		font-size: 0.8rem;
-		padding: 8px;
-	}
+    input#get-city {
+        font-size: 0.8rem;
+        padding: 8px;
+    }
 
-	.info-container {
-		padding: 10px;
-	}
+    .info-container {
+        padding: 10px;
+    }
+
+    .forecast-day {
+        min-width: 100px;
+    }
 }
