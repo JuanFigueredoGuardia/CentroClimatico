@@ -116,4 +116,16 @@ wind.deg)})`;
             }
         }
     });
+        // Cambiar fondo de imagen aleatoriamente desde la carpeta 'imagenes'
+    const backgrounds = [
+    "url('imagenes/bg1.jpg')", 
+    "url('imagenes/bg2.jpg')", 
+    "url('imagenes/bg2.jpg')", 
+    "url('imagenes/bg4.jpg')",
+    "url('imagenes/bg5.jpg')"
+   ];
+
+   document.body.style.backgroundImage = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+   document.body.style.backgroundSize = "cover"; // Ajusta el tamaño de la imagen
+   document.body.style.backgroundPosition = "center"; // Centra la imagen
 });
