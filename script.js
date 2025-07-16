@@ -4,52 +4,54 @@ document.addEventListener("DOMContentLoaded", () => {
     const weatherDegElement = document.querySelector(".weather-deg");
     const humidityElement = document.querySelector(".humidity");
     const windElement = document.querySelector(".wind");
-    const dayNightStatusElement = document.querySelector(".day-night-status");
-
     const forecastDaysContainer = document.querySelector(".forecast-days");
     const prevBtn = document.querySelector(".prev-btn");
     const nextBtn = document.querySelector(".next-btn");
 
-    // Configuración inicial
-    const API_KEY = "77810747479a58a3c9a8d0311f06e489"; // Reemplaza con tu clave API de OpenWeatherMap
-    const DEFAULT_CITY = "Concordia"; // Ciudad predeterminada
+    const API_KEY = "77810747479a58a3c9a8d0311f06e489";
+    const DEFAULT_CITY = "Concordia";
 
-    // Obtener datos del clima actual
+    const showError = (message) => {
+        const alert = document.createElement("div");
+        alert.className = "custom-alert";
+        alert.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+        document.body.appendChild(alert);
+        setTimeout(() => alert.remove(), 4000);
+    };
+
     const fetchWeatherData = (city = DEFAULT_CITY) => {
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=es&appid=${API_KEY}`;
         fetch(url)
             .then((response) => response.json())
             .then((data) => {
+                if (data.cod !== 200) {
+                    showError("❌ Ciudad no encontrada. Verifica el nombre.");
+                    return;
+                }
                 cityNameElement.textContent = data.name;
                 weatherConditionElement.textContent = data.weather[0].description;
                 weatherDegElement.textContent = `${Math.round(data.main.temp)}°C`;
                 humidityElement.textContent = `Humedad: ${data.main.humidity}%`;
-                windElement.textContent = `Viento: ${(data.wind.speed * 3.6).toFixed(1)} km/h (${getWindDirection(data.
-wind.deg)})`;
-                dayNightStatusElement.textContent =
-                    data.weather[0].icon.includes("d") ? "Día" : "Noche";
+                windElement.textContent = `Viento: ${(data.wind.speed * 3.6).toFixed(1)} km/h (${getWindDirection(data.wind.deg)})`;
             })
-            .catch((error) => {
-                console.error("Error al obtener los datos del clima:", error);
-            });
+            .catch(() => showError("⚠️ Error al obtener el clima."));
     };
 
-    // Obtener datos del pronóstico para los próximos días
     const fetchForecastData = (city = DEFAULT_CITY) => {
         const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=es&appid=${API_KEY}`;
         fetch(url)
             .then((response) => response.json())
             .then((data) => {
-                forecastDaysContainer.innerHTML = ""; // Limpiar el contenedor
-                const forecastDays = data.list.filter((item) =>
-                    item.dt_txt.includes("12:00:00")
-                ); // Obtener datos a las 12:00 PM de cada día
-
+                if (data.cod !== "200") {
+                    showError("⚠️ No se pudo obtener el pronóstico.");
+                    return;
+                }
+                forecastDaysContainer.innerHTML = "";
+                const forecastDays = data.list.filter((item) => item.dt_txt.includes("12:00:00"));
                 forecastDays.forEach((forecast) => {
                     const date = new Date(forecast.dt * 1000);
                     const options = { weekday: "long", day: "numeric", month: "long" };
                     const dayString = date.toLocaleDateString("es-ES", options);
-
                     const dayElement = document.createElement("div");
                     dayElement.classList.add("forecast-day");
                     dayElement.innerHTML = `
@@ -60,23 +62,19 @@ wind.deg)})`;
                     forecastDaysContainer.appendChild(dayElement);
                 });
             })
-            .catch((error) => {
-                console.error("Error al obtener el pronóstico del clima:", error);
-            });
+            .catch(() => showError("⚠️ Error al obtener el pronóstico."));
     };
 
-    // Obtener dirección del viento
     const getWindDirection = (deg) => {
         const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
         const index = Math.round(deg / 45) % 8;
         return directions[index];
     };
 
-    // Slider para los días del pronóstico
     let currentIndex = 0;
 
     const updateSliderPosition = () => {
-        const slideWidth = document.querySelector(".forecast-day").offsetWidth + 10; // Ancho del slide más margen
+        const slideWidth = document.querySelector(".forecast-day").offsetWidth + 10;
         forecastDaysContainer.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
     };
 
@@ -94,7 +92,6 @@ wind.deg)})`;
         }
     });
 
-    // Actualizar hora y fecha
     const updateTime = () => {
         const now = new Date();
         const dayNames = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -107,14 +104,12 @@ wind.deg)})`;
         document.getElementById("current-time").textContent = time;
     };
 
-    setInterval(updateTime, 1000); // Actualizar cada segundo
+    setInterval(updateTime, 1000);
     updateTime();
 
-    // Inicializar datos predeterminados
     fetchWeatherData();
     fetchForecastData();
 
-    // Evento de búsqueda de ciudad
     document.getElementById("get-city").addEventListener("keypress", (event) => {
         if (event.key === "Enter") {
             const city = event.target.value.trim();
@@ -125,7 +120,6 @@ wind.deg)})`;
         }
     });
 
-    // Cambiar fondo de imagen aleatoriamente desde la carpeta 'imagenes'
     const backgrounds = [
         "url('imagenes/bg1.jpg')",
         "url('imagenes/bg2.jpg')",
@@ -133,8 +127,8 @@ wind.deg)})`;
         "url('imagenes/bg4.jpg')",
         "url('imagenes/bg5.jpg')"
     ];
-    
+
     document.body.style.backgroundImage = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-    document.body.style.backgroundSize = "cover"; // Ajusta el tamaño de la imagen
-    document.body.style.backgroundPosition = "center"; // Centra la imagen
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
 });
