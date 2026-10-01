@@ -4,8 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sistema Meteorológico</title>
+  <meta name="description" content="Sistema meteorológico interactivo para consultar el clima actual y pronóstico del tiempo." />
+  <meta property="og:title" content="Sistema Meteorológico" />
+  <meta property="og:description" content="Sistema meteorológico interactivo para consultar el clima actual y pronóstico del tiempo." />
   <link rel="icon" href="imagenes/weather-icon.png" />
   <link rel="stylesheet" href="styles.css" />
+  <script src="/node_modules/react/umd/react.production.min.js"></script>
+  <script src="/node_modules/react-dom/umd/react-dom.production.min.js"></script>
+  <script src="/node_modules/recharts/umd/Recharts.js"></script>
   <script src="script.js" defer></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
 </head>
@@ -15,20 +21,112 @@
       <img class="weather-icon" src="imagenes/weather-icon.png" alt="Logo clima" />
       Clima
     </h1>
-    <input id="get-city" type="text" placeholder="🔍 Buscar ciudad..." />
+    <div class="search-container">
+      <input id="get-city" type="text" placeholder="🔍 Buscar ciudad..." />
+      <button id="current-location-btn" class="location-btn" title="Use Current Location" aria-label="Use Current Location">
+        <i class="fas fa-location-arrow"></i>
+        <span>Usar ubicación actual</span>
+      </button>
+      <div class="unit-toggle" id="unit-toggle" role="group" aria-label="Cambiar unidad de temperatura">
+        <button id="unit-c-btn" class="unit-btn active" data-unit="C" title="Grados Celsius">°C</button>
+        <button id="unit-f-btn" class="unit-btn" data-unit="F" title="Grados Fahrenheit">°F</button>
+      </div>
+      <button id="test-alert-btn" class="test-alert-btn" title="Simular alerta meteorológica para demostración" aria-label="Simular alerta">
+        <i class="fas fa-bell"></i>
+        <span>Simular Alerta</span>
+      </button>
+    </div>
   </header>
   <main>
+    <!-- Banner Prominente de Alerta Meteorológica Severa -->
+    <div id="weather-alert-banner" class="weather-alert-banner" style="display: none;" role="alert" aria-live="assertive">
+      <div class="alert-banner-content">
+        <div class="alert-banner-icon-wrapper">
+          <i id="alert-banner-icon" class="fas fa-exclamation-triangle alert-banner-icon"></i>
+        </div>
+        <div class="alert-banner-text">
+          <div class="alert-banner-header">
+            <span id="alert-banner-tag" class="alert-banner-tag">ALERTA ACTIVA</span>
+            <span id="alert-banner-source" class="alert-banner-source"></span>
+          </div>
+          <h3 id="alert-banner-title" class="alert-banner-title">Aviso Meteorológico Especial</h3>
+          <p id="alert-banner-desc" class="alert-banner-desc">Se han detectado advertencias de clima adverso para esta ubicación.</p>
+          <div id="alert-banner-instructions" class="alert-banner-instructions" style="display: none;"></div>
+        </div>
+        <button id="alert-banner-close" class="alert-banner-close" title="Cerrar aviso de alerta" aria-label="Cerrar aviso">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
     <div class="info-container">
       <div class="info-item"><i class="fas fa-city"></i> <span>Ciudad: </span><span id="city-name"></span></div>
       <div class="info-item"><i class="fas fa-calendar-day"></i> <span class="day"></span>, <span class="date"></span></div>
       <div class="info-item"><i class="fas fa-clock"></i> <span id="current-time"></span></div>
       <div class="info-item"><i class="fas fa-thermometer-half"></i> <span class="weather-deg"></span></div>
-      <div class="info-item"><i class="fas fa-cloud-sun-rain"></i> <span class="weather-condition"></span></div>
+      <div class="info-item weather-condition-row">
+        <span class="weather-icon-container">
+          <img id="weather-dynamic-icon" class="weather-dynamic-icon" src="" alt="Icono clima" style="display: none;" />
+          <i id="weather-fallback-icon" class="fas fa-cloud-sun-rain"></i>
+        </span>
+        <span class="weather-condition"></span>
+      </div>
       <div class="info-item"><i class="fas fa-tint"></i> <span class="humidity"></span></div>
       <div class="info-item"><i class="fas fa-wind"></i> <span class="wind"></span></div>
+
+      <!-- Sección de Índice UV y Recomendaciones de Seguridad -->
+      <div class="uv-index-section" id="uv-section">
+        <div class="uv-header">
+          <div class="uv-title-wrapper">
+            <i class="fas fa-sun uv-icon"></i>
+            <span class="uv-title">Índice de Radiación UV</span>
+          </div>
+          <span id="uv-badge" class="uv-badge uv-low">Bajo</span>
+        </div>
+        <div class="uv-details">
+          <div class="uv-value-box">
+            <span id="uv-value" class="uv-value">--</span>
+            <span class="uv-scale-max">/ 11+</span>
+          </div>
+          <div class="uv-meter">
+            <div class="uv-meter-track">
+              <div id="uv-bar-fill" class="uv-bar-fill uv-low" style="width: 15%;"></div>
+            </div>
+            <div class="uv-meter-labels">
+              <span>Bajo (0-2)</span>
+              <span>Mod (3-5)</span>
+              <span>Alto (6-7)</span>
+              <span>Muy Alto (8-10)</span>
+              <span>Extremo (11+)</span>
+            </div>
+          </div>
+        </div>
+        <div class="uv-safety-container">
+          <i class="fas fa-shield-alt uv-safety-icon"></i>
+          <p id="uv-safety-text" class="uv-safety-text">Cargando nivel de radiación y consejos de seguridad...</p>
+        </div>
+      </div>
     </div>
     <div class="forecast">
       <h2>⛅ Pronóstico próximos días</h2>
+
+      <!-- Gráfica de Tendencia de Temperatura (Recharts) -->
+      <div class="forecast-chart-card">
+        <div class="forecast-chart-header">
+          <div class="chart-title-wrapper">
+            <i class="fas fa-chart-line chart-icon"></i>
+            <span class="chart-title">Tendencia de Temperatura</span>
+          </div>
+          <span class="chart-subtitle" id="chart-subtitle">Próximos 5 días</span>
+        </div>
+        <div class="forecast-chart-wrapper">
+          <div id="forecast-chart-root">
+            <div class="chart-loading">
+              <i class="fas fa-spinner fa-spin"></i> Cargando gráfica de tendencia...
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="forecast-slider">
         <button class="slider-btn prev-btn"><i class="fas fa-chevron-left"></i></button>
         <div class="forecast-days-container">
