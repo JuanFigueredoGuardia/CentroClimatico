@@ -126,6 +126,62 @@ header .title {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
 }
 
+.time-toggle {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 25px;
+  padding: 3px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.time-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.time-btn:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.time-btn.active {
+  background: #fff;
+  color: #1e69de;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.time-badge-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  border-radius: 12px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+}
+
+.time-badge-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.06);
+}
+
 .test-alert-btn {
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.35);
@@ -793,7 +849,8 @@ main {
     justify-content: center;
   }
 
-  .unit-toggle {
+  .unit-toggle,
+  .time-toggle {
     margin-left: 0;
   }
 
@@ -932,6 +989,12 @@ main {
     padding: 8px 14px;
     width: 100%;
     justify-content: center;
+  }
+
+  .unit-btn,
+  .time-btn {
+    padding: 6px 11px;
+    font-size: 0.88rem;
   }
 
   main {

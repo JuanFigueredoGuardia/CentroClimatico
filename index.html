@@ -9,9 +9,13 @@
   <meta property="og:description" content="Sistema meteorológico interactivo para consultar el clima actual y pronóstico del tiempo." />
   <link rel="icon" href="imagenes/weather-icon.png" />
   <link rel="stylesheet" href="styles.css" />
-  <script src="/node_modules/react/umd/react.production.min.js"></script>
-  <script src="/node_modules/react-dom/umd/react-dom.production.min.js"></script>
-  <script src="/node_modules/recharts/umd/Recharts.js"></script>
+  <!-- Librerías React y Recharts compatibles con GitHub, Netlify y desarrollo local -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+  <script>window.React || document.write('<script src="/node_modules/react/umd/react.production.min.js"><\/script>');</script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+  <script>window.ReactDOM || document.write('<script src="/node_modules/react-dom/umd/react-dom.production.min.js"><\/script>');</script>
+  <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js" crossorigin="anonymous"></script>
+  <script>window.Recharts || document.write('<script src="/node_modules/recharts/umd/Recharts.js"><\/script>');</script>
   <script src="script.js" defer></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
 </head>
@@ -30,6 +34,10 @@
       <div class="unit-toggle" id="unit-toggle" role="group" aria-label="Cambiar unidad de temperatura">
         <button id="unit-c-btn" class="unit-btn active" data-unit="C" title="Grados Celsius">°C</button>
         <button id="unit-f-btn" class="unit-btn" data-unit="F" title="Grados Fahrenheit">°F</button>
+      </div>
+      <div class="time-toggle" id="time-toggle" role="group" aria-label="Cambiar formato de hora">
+        <button id="time-24-btn" class="time-btn active" data-format="24" title="Formato de 24 horas (ej. 14:30)">24h</button>
+        <button id="time-12-btn" class="time-btn" data-format="12" title="Formato de 12 horas con AM/PM (ej. 2:30 PM)">12h</button>
       </div>
       <button id="test-alert-btn" class="test-alert-btn" title="Simular alerta meteorológica para demostración" aria-label="Simular alerta">
         <i class="fas fa-bell"></i>
@@ -61,7 +69,11 @@
     <div class="info-container">
       <div class="info-item"><i class="fas fa-city"></i> <span>Ciudad: </span><span id="city-name"></span></div>
       <div class="info-item"><i class="fas fa-calendar-day"></i> <span class="day"></span>, <span class="date"></span></div>
-      <div class="info-item"><i class="fas fa-clock"></i> <span id="current-time"></span></div>
+      <div class="info-item time-item">
+        <i class="fas fa-clock"></i>
+        <span id="current-time"></span>
+        <button id="time-badge-btn" class="time-badge-btn" title="Alternar formato de hora 12h / 24h" aria-label="Alternar formato de hora">24H</button>
+      </div>
       <div class="info-item"><i class="fas fa-thermometer-half"></i> <span class="weather-deg"></span></div>
       <div class="info-item weather-condition-row">
         <span class="weather-icon-container">

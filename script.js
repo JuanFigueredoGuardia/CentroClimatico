@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const weatherFallbackIcon = document.getElementById("weather-fallback-icon");
     const unitCBtn = document.getElementById("unit-c-btn");
     const unitFBtn = document.getElementById("unit-f-btn");
+    const time24Btn = document.getElementById("time-24-btn");
+    const time12Btn = document.getElementById("time-12-btn");
+    const timeBadgeBtn = document.getElementById("time-badge-btn");
     const weatherAlertBanner = document.getElementById("weather-alert-banner");
     const alertBannerIcon = document.getElementById("alert-banner-icon");
     const alertBannerTag = document.getElementById("alert-banner-tag");
@@ -27,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const DEFAULT_CITY = "Concordia";
 
     let currentUnit = localStorage.getItem("weather_temp_unit") || "C";
+    let currentTimeFormat = localStorage.getItem("weather_time_format") || "24";
     let lastWeatherData = null;
     let lastForecastData = null;
 
@@ -42,6 +46,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const updateUnitButtons = () => {
         if (unitCBtn) unitCBtn.classList.toggle("active", currentUnit === "C");
         if (unitFBtn) unitFBtn.classList.toggle("active", currentUnit === "F");
+    };
+
+    const updateTimeButtons = () => {
+        if (time24Btn) time24Btn.classList.toggle("active", currentTimeFormat === "24");
+        if (time12Btn) time12Btn.classList.toggle("active", currentTimeFormat === "12");
+        if (timeBadgeBtn) timeBadgeBtn.textContent = currentTimeFormat === "24" ? "24H" : "12H";
+    };
+
+    const setTimeFormat = (format) => {
+        if (currentTimeFormat === format) return;
+        currentTimeFormat = format;
+        try {
+            localStorage.setItem("weather_time_format", format);
+        } catch {
+            // ignore if local storage is restricted
+        }
+        updateTimeButtons();
+        updateTime();
     };
 
     const setUnit = (unit) => {
@@ -760,11 +782,31 @@ document.addEventListener("DOMContentLoaded", () => {
         const dayNames = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
         const day = dayNames[now.getDay()];
         const date = now.toLocaleDateString();
-        const time = now.toLocaleTimeString();
 
-        document.querySelector(".day").textContent = day;
-        document.querySelector(".date").textContent = date;
-        document.getElementById("current-time").textContent = time;
+        let timeStr = "";
+        if (currentTimeFormat === "12") {
+            timeStr = now.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: true
+            });
+        } else {
+            timeStr = now.toLocaleTimeString("es-ES", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false
+            });
+        }
+
+        const dayEl = document.querySelector(".day");
+        const dateEl = document.querySelector(".date");
+        const timeEl = document.getElementById("current-time");
+
+        if (dayEl) dayEl.textContent = day;
+        if (dateEl) dateEl.textContent = date;
+        if (timeEl) timeEl.textContent = timeStr;
     };
 
     setInterval(updateTime, 1000);
@@ -857,7 +899,22 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    if (time24Btn) {
+        time24Btn.addEventListener("click", () => setTimeFormat("24"));
+    }
+
+    if (time12Btn) {
+        time12Btn.addEventListener("click", () => setTimeFormat("12"));
+    }
+
+    if (timeBadgeBtn) {
+        timeBadgeBtn.addEventListener("click", () => {
+            setTimeFormat(currentTimeFormat === "24" ? "12" : "24");
+        });
+    }
+
     updateUnitButtons();
+    updateTimeButtons();
 
     const backgrounds = [
         "url('imagenes/bg1.jpg')",
